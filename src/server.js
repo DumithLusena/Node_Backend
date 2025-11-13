@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import db from './db.js'
 import usersRoutes from './routes/users.routes.js';
+import postsRoutes from './routes/posts.routes.js';
 
 dotenv.config();
 
@@ -23,6 +24,18 @@ app.get('/health', async (req, res) => {
   }
 });
 
+app.use('/api/users', usersRoutes);
+app.use('/api/posts', postsRoutes);
+
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({ message: 'Internal Server Error' });
+});
+
+app.use((req, res) => {
+  res.status(404).json({ message: 'Not Found' });
+});
+
 app.listen(PORT, async () => {
   try {
     const [rows] = await db.query('SELECT 1');
@@ -33,9 +46,3 @@ app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
-  res.status(500).json({ message: 'Internal Server Error' });
-});
-
-app.use('/api/users', usersRoutes);
