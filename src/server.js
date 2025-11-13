@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import db from './db.js'
+import usersRoutes from './routes/users.routes.js';
 
 dotenv.config();
 
@@ -31,3 +32,10 @@ app.listen(PORT, async () => {
   }
   console.log(`Server running on port ${PORT}`);
 });
+
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({ message: 'Internal Server Error' });
+});
+
+app.use('/api/users', usersRoutes);
